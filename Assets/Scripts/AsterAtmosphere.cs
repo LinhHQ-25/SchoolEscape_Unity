@@ -1,0 +1,8 @@
+using UnityEngine;
+namespace Aster {
+public class AsterAtmosphere:MonoBehaviour {
+ public static void Install(Transform world){foreach(var t in world.GetComponentsInChildren<Transform>(true))if(t.name.StartsWith("P_Lantern")){var l=t.gameObject.AddComponent<Light>();l.type=LightType.Point;l.color=new Color(1,.64f,.27f);l.intensity=.9f;l.range=4.5f;l.shadows=LightShadows.None;t.gameObject.AddComponent<AsterLantern>();}
+ var o=new GameObject("Sunlit dust");o.transform.SetParent(world,false);o.transform.position=world.TransformPoint(new Vector3(0,2,0));var ps=o.AddComponent<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);var main=ps.main;main.loop=true;main.duration=12;main.startLifetime=12;main.startSpeed=.06f;main.startSize=new ParticleSystem.MinMaxCurve(.012f,.035f);main.startColor=new Color(1,.85f,.55f,.25f);main.maxParticles=90;main.simulationSpace=ParticleSystemSimulationSpace.World;var em=ps.emission;em.rateOverTime=6;var shape=ps.shape;shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(17,4,27);var renderer=ps.GetComponent<ParticleSystemRenderer>();var tex=new Texture2D(32,32,TextureFormat.RGBA32,false);for(int y=0;y<32;y++)for(int x=0;x<32;x++){float a=Mathf.Clamp01(1-Vector2.Distance(new Vector2(x,y),new Vector2(15.5f,15.5f))/15.5f);tex.SetPixel(x,y,new Color(1,1,1,a*a));}tex.Apply();renderer.sharedMaterial=new Material(Resources.Load<Shader>("Art/AsterDust"));renderer.sharedMaterial.mainTexture=tex;ps.Play();}
+}
+public class AsterLantern:MonoBehaviour {Light lamp;float seed;void Start(){lamp=GetComponent<Light>();seed=transform.position.x*3+transform.position.z;}void Update(){lamp.intensity=.85f+Mathf.PerlinNoise(seed,Time.time*.7f)*.18f;}}
+}

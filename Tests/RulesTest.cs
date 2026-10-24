@@ -1,0 +1,6 @@
+using System;
+using Aster;
+class RulesTest {
+ static int n;static void Check(bool v,string name){n++;if(!v)throw new Exception(name);}
+ static void Main(){var s=new ExpeditionState();Check(s.Valid(),"fresh valid");Check(!Rules.Gate(s),"locked gate");Check(!Rules.Light(s),"locked light");Check(!Rules.Water(s),"locked water");Check(!Rules.Machine(s),"locked machine");s.rings=new[]{0,1,2};Check(!Rules.Gate(s),"clue required");s.clue=true;int solutions=0;for(int a=0;a<4;a++)for(int b=0;b<4;b++)for(int c=0;c<4;c++){s.rings=new[]{a,b,c};if(Rules.Gate(s))solutions++;}Check(solutions==1,"unique gate combination out of 64");s.rings=new[]{0,1,2};Check(Rules.Gate(s),"gate answer");s.gate=true;s.mirrors=new[]{1,3};Check(!Rules.Light(s),"shutter required");s.shutter=true;Check(Rules.Light(s),"light answer");s.light=true;s.channels=new[]{1,0,1};s.valve=true;Check(!Rules.Water(s),"handle required");s.handle=true;Check(Rules.Water(s),"water answer");s.installed=new[]{true,true,true};Check(!Rules.Machine(s),"water required");s.water=true;Check(Rules.Machine(s),"machine answer");s.machine=true;Check(s.Completed==4,"completion count");s.notes=new[]{true,false,true};Check(s.Notes==2,"notes count");s.rings=new[]{9,0,0};Check(!s.Valid(),"reject malformed save");Console.WriteLine("PASS: "+n+" checks including all 64 gate states");}
+}
